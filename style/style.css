@@ -1,0 +1,110 @@
+/* ==========================================
+   Estilos Generales - Control de Accesos
+   ========================================== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+/* ==========================================
+   Formulario y Controles
+   ========================================== */
+form {
+    margin-bottom: 30px;
+    display: grid;
+    gap: 15px;
+}
+
+label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+input:focus, textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+/* ==========================================
+   Tabla de Registros
+   ========================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+}
+
+th, td {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* ==========================================
+   Mensajes de Alerta
+   ========================================== */
+.msg {
+    padding: 12px;
+    margin-bottom: 20px;
+    background: #e2f0d9;
+    color: #385723;
+    border: 1px solid #c8e6c9;
+    border-radius: 4px;
+    font-weight: bold;
+}
