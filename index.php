@@ -1,19 +1,18 @@
 <?php
-// Incluir la conexión segura a la base de datos
+// conexion.php maneja la conexión segura con PDO
 require_once 'conexion.php';
 
 $mensaje = "";
 $tipo_alerta = "";
 
-// 2. Procesamiento y validación del lado del servidor
+// Procesamiento de Inserción (Create) via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitización básica con trim
     $nombre  = trim($_POST['nombre_completo'] ?? '');
     $cedula  = trim($_POST['cedula'] ?? '');
     $motivo  = trim($_POST['motivo_visita'] ?? '');
     $destino = trim($_POST['persona_a_visitar'] ?? '');
 
-    // Validaciones estrictas en el servidor
+    // Validación básica en el servidor
     if (empty($nombre) || empty($cedula) || empty($motivo) || empty($destino)) {
         $mensaje = "Error: Todos los campos son obligatorios.";
         $tipo_alerta = "error";
@@ -22,13 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tipo_alerta = "error";
     } else {
         try {
-            // 3. SENTENCIA PREPARADA (Prepared Statement) contra Inyección SQL
+            // SENTENCIA PREPARADA contra Inyección SQL
             $sql = "INSERT INTO visitantes (nombre_completo, cedula, motivo_visita, persona_a_visitar) 
                     VALUES (:nombre, :cedula, :motivo, :destino)";
             
             $stmt = $pdo->prepare($sql);
             
-            // Ejecución segura enlazando los parámetros con nombre
+            // Ejecución segura enlazando los parámetros
             $stmt->execute([
                 'nombre'  => $nombre,
                 'cedula'  => $cedula,
@@ -36,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'destino' => $destino
             ]);
 
-            $mensaje = "¡Éxito! Visita registrada e inserción completada correctamente.";
+            $mensaje = "¡Éxito! Ingreso de visitante registrado correctamente.";
             $tipo_alerta = "success";
         } catch (\PDOException $e) {
             $mensaje = "Error en la base de datos: " . $e->getMessage();
@@ -44,10 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
-// Consultar todos los registros de la tabla para mostrarlos en la interfaz web
-$stmtQuery = $pdo->query("SELECT * FROM visitantes ORDER BY id DESC");
-$visitantes = $stmtQuery->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -55,28 +50,33 @@ $visitantes = $stmtQuery->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Control de Accesos - Registro de Visitantes</title>
-    <!-- Enlace a la hoja de estilos externa -->
     <link rel="stylesheet" href="style/style.css">
     <style>
-        /* Ajustes adicionales rápidos para alertas de éxito/error */
         .msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .msg.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .nav-links { margin-bottom: 20px; text-align: right; }
+        .nav-links a { background: #6c757d; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 14px; }
+        .nav-links a:hover { background: #5a6268; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Sistema de Control de Accesos</h2>
-    <p>Módulo Web Full-Stack - Registro y Gestión de Visitantes</p>
+    <div class="nav-links">
+        <a href="consulta.php">Ir al Módulo de Consulta &rarr;</a>
+    </div>
 
-    <!-- Mensaje de respuesta del servidor -->
+    <h2>Sistema de Control de Accesos</h2>
+    <p>Módulo de Registro de Nuevos Ingresos</p>
+
+    <!-- Alertas de servidor -->
     <?php if (!empty($mensaje)): ?>
         <div class="msg <?= $tipo_alerta ?>">
             <?= htmlspecialchars($mensaje) ?>
         </div>
     <?php endif; ?>
 
-    <!-- 1. Formulario con validación en el cliente (HTML5) -->
+    <!-- Formulario de Registro (Create) con validación HTML5 -->
     <form method="POST" action="">
         <div>
             <label for="nombre_completo">Nombre Completo:</label>
@@ -95,46 +95,11 @@ $visitantes = $stmtQuery->fetchAll();
 
         <div>
             <label for="persona_a_visitar">Persona o Departamento a Visitar:</label>
-            <input type="text" id="persona_a_visitar" name="persona_a_visitar" required maxlength="100" placeholder="Ej. Ing. Informática / Gerencia">
+            <input type="text" id="persona_a_visitar" name="persona_a_visitar" required maxlength="100" placeholder="Ej. Gerencia / Ing. Informática">
         </div>
 
         <button type="submit">Registrar Ingreso</button>
     </form>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-
-    <!-- Tabla web mostrando los registros de la base de datos -->
-    <h3>Historial de Visitantes Registrados</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre Completo</th>
-                <th>Cédula</th>
-                <th>Motivo</th>
-                <th>Destino</th>
-                <th>Hora de Ingreso</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (count($visitantes) > 0): ?>
-                <?php foreach ($visitantes as $row): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['id']) ?></td>
-                        <td><?= htmlspecialchars($row['nombre_completo']) ?></td>
-                        <td><?= htmlspecialchars($row['cedula']) ?></td>
-                        <td><?= htmlspecialchars($row['motivo_visita']) ?></td>
-                        <td><?= htmlspecialchars($row['persona_a_visitar']) ?></td>
-                        <td><?= htmlspecialchars($row['hora_ingreso']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="6" style="text-align: center; color: #777;">No hay registros de visitantes en la base de datos.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
 </div>
 
 </body>
