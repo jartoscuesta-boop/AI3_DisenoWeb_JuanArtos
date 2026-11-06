@@ -1,0 +1,19 @@
+# Dependencias y entornos locales
+/vendor/
+.env
+.env.local
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Logs y errores de PHP/Apache
+*.log
+error_log
+
+# Archivos de configuración de editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
